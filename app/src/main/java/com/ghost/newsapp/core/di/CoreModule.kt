@@ -1,6 +1,8 @@
 package com.ghost.newsapp.core.di
 
+
 import androidx.room.Room
+import com.ghost.newsapp.core.data.local.ArticleDatabase
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
 import io.ktor.client.engine.cio.endpoint
@@ -15,21 +17,22 @@ import io.ktor.http.HttpHeaders
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import org.koin.android.ext.koin.androidApplication
+
 import org.koin.dsl.module
 
 val coreModule = module {
 
-//    single {
-//        Room.databaseBuilder(
-//            androidApplication(),
-//            ArticleDatabase::class.java,
-//            "article_db.db"
-//        ).build()
-//    }
+    single {
+        Room.databaseBuilder(
+            androidApplication(),
+            ArticleDatabase::class.java,
+            "article_db.db"
+        ).build()
+    }
 
-//    single {
-//        get<ArticleDatabase>().dao
-//    }
+    single {
+        get<ArticleDatabase>().dao
+    }
 
     single {
         HttpClient(CIO) {
