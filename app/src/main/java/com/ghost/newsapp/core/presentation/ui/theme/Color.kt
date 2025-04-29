@@ -1,4 +1,4 @@
-package com.ghost.newsapp.presentation.ui.theme
+package com.ghost.newsapp.core.presentation.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
