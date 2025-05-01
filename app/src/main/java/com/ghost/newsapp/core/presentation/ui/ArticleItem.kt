@@ -19,6 +19,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import com.ghost.newsapp.R
 
 @Composable
 fun ArticleItem(article: Article, modifier: Modifier = Modifier) {
@@ -29,12 +30,13 @@ fun ArticleItem(article: Article, modifier: Modifier = Modifier) {
         elevation = CardDefaults.cardElevation(4.dp),
         shape = MaterialTheme.shapes.medium
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
+        Column(modifier = Modifier.padding(10.dp)) {
 
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
                     .data(article.imageUrl)
                     .crossfade(true)
+                    .error(R.drawable.no_image)
                     .build(),
                 contentDescription = article.title,
                 modifier = Modifier

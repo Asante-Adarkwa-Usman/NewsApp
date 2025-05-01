@@ -23,7 +23,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.serialization.json.Json
 import org.koin.android.ext.koin.androidApplication
 import org.koin.androidx.viewmodel.dsl.viewModel
-
 import org.koin.dsl.module
 
 val coreModule = module {
@@ -37,6 +36,7 @@ val coreModule = module {
     //Provides the NewsViewModel
     viewModel { NewsViewModel(get(), get()) }
 
+    //Provides Room
     single {
         Room.databaseBuilder(
             androidApplication(),
@@ -45,10 +45,12 @@ val coreModule = module {
         ).build()
     }
 
+    //Provides Article Db
     single {
         get<ArticleDatabase>().dao
     }
 
+    //Provides Ktor
     single {
         HttpClient(CIO) {
             expectSuccess = true
