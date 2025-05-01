@@ -2,7 +2,10 @@ package com.ghost.newsapp.core.di
 
 
 import androidx.room.Room
+import com.ghost.newsapp.core.data.NewsRepositoryImpl
 import com.ghost.newsapp.core.data.local.ArticleDatabase
+import com.ghost.newsapp.core.domain.NewsRepository
+import com.ghost.newsapp.core.presentation.vm.NewsViewModel
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
 import io.ktor.client.engine.cio.endpoint
@@ -15,12 +18,24 @@ import io.ktor.client.request.header
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.serialization.kotlinx.json.json
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.serialization.json.Json
 import org.koin.android.ext.koin.androidApplication
+import org.koin.androidx.viewmodel.dsl.viewModel
 
 import org.koin.dsl.module
 
 val coreModule = module {
+
+    //Provides NewsRepository
+    single<NewsRepository> { NewsRepositoryImpl(get(), get()) }
+
+    //Provides CoroutineDispatcher
+    single<CoroutineDispatcher> { Dispatchers.IO }
+
+    //Provides the NewsViewModel
+    viewModel { NewsViewModel(get(), get()) }
 
     single {
         Room.databaseBuilder(

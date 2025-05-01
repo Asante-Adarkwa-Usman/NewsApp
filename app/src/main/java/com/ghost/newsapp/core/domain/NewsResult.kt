@@ -1,9 +1,8 @@
 package com.ghost.newsapp.core.domain
 
-sealed class NewsResult<T>(
-    val data: T? = null,
-    val error: String?
+sealed class NewsResult<out T>(
 ) {
-    class Success<T>(data: T?) : NewsResult<T>(data, null)
-    class Error<T>(error: String?) : NewsResult<T>(null, error)
+    data object Loading: NewsResult<Nothing>()
+    data class Success<T>(val data: T?) : NewsResult<T>()
+    class Error<T>(val error: String?) : NewsResult<T>()
 }

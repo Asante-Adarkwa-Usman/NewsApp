@@ -47,6 +47,7 @@ class NewsRepositoryImpl(
 
     override suspend fun getNews(): Flow<NewsResult<NewsList>> {
         return flow {
+            emit(NewsResult.Loading)
             val remoteNewsList = try {
                 getRemoteNews(null)
             } catch (e: Exception) {
@@ -67,14 +68,13 @@ class NewsRepositoryImpl(
                 emit(NewsResult.Success(localNewsList))
                 return@flow
             }
-
-            emit(NewsResult.Error("No Data"))
-
+            emit(NewsResult.Error("No Data Found"))
         }
     }
 
     override suspend fun paginate(nextPage: String): Flow<NewsResult<NewsList>> {
         return flow {
+            emit(NewsResult.Loading)
             val remoteNewsList = try {
                 getRemoteNews(nextPage)
             } catch (e: Exception) {
