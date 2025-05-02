@@ -6,10 +6,10 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
-import com.ghost.newsapp.core.presentation.ui.NewsScreen
+import androidx.navigation.compose.rememberNavController
+import com.ghost.newsapp.core.navigation.AppNavigation
 import com.ghost.newsapp.core.presentation.ui.theme.NewsAppTheme
-import com.ghost.newsapp.core.presentation.vm.NewsViewModel
-import org.koin.androidx.compose.koinViewModel
+
 
 class MainActivity : ComponentActivity() {
 
@@ -17,9 +17,9 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-             val viewModel:  NewsViewModel = koinViewModel()
+            val navController = rememberNavController()
             NewsAppTheme {
-                   NewsScreen(viewModel)
+                   AppNavigation(navController)
             }
         }
     }
@@ -29,9 +29,8 @@ class MainActivity : ComponentActivity() {
 
 @Preview(showBackground = true)
 @Composable
-fun GreetingPreview() {
-    val viewModel: NewsViewModel = koinViewModel()
+fun AppPreview() {
     NewsAppTheme {
-        NewsScreen(viewModel= viewModel)
+        AppNavigation(navController = rememberNavController())
     }
 }

@@ -2,6 +2,7 @@ package com.ghost.newsapp.core.data
 
 import com.ghost.newsapp.core.data.local.ArticlesDao
 import com.ghost.newsapp.core.data.remote.NewsListDto
+import com.ghost.newsapp.core.domain.Article
 import com.ghost.newsapp.core.domain.NewsList
 import com.ghost.newsapp.core.domain.NewsRepository
 import com.ghost.newsapp.core.domain.NewsResult
@@ -93,4 +94,35 @@ class NewsRepositoryImpl(
             }
         }
     }
+
+    override suspend fun getArticle(articleId: String): Flow<NewsResult<Article>> {
+        return flow {
+            emit(NewsResult.Loading)
+
+            // Try to get the article from local database
+            val localArticleEntity = dao.getArticle(articleId)
+            if (localArticleEntity != null) {
+                emit(NewsResult.Success(localArticleEntity.toArticle()))
+                return@flow
+            }
+
+            // Fallback: optionally fetch from remote if API supports it
+            try {
+                val remoteNewsList = getRemoteNews(null) // get all and try to find the one
+                val remoteArticle = remoteNewsList.articles.find { it.articleId == articleId }
+
+                if (remoteArticle != null) {
+                    // Optionally store it locally
+                    dao.upsertArticleList(listOf(remoteArticle.toArticleEntity()) )
+                    emit(NewsResult.Success(remoteArticle))
+                } else {
+                    emit(NewsResult.Error("Article not found"))
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                emit(NewsResult.Error("Failed to fetch article: ${e.localizedMessage}"))
+            }
+        }
+    }
+
 }

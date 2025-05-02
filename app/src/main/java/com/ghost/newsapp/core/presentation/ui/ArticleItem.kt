@@ -1,5 +1,6 @@
 package com.ghost.newsapp.core.presentation.ui
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -22,11 +23,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.ghost.newsapp.R
 
 @Composable
-fun ArticleItem(article: Article, modifier: Modifier = Modifier) {
+fun ArticleItem(article: Article, modifier: Modifier = Modifier, onClick: (String) -> Unit) {
     Card(
         modifier = modifier
             .padding(8.dp)
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .clickable { onClick(article.articleId) },
         elevation = CardDefaults.cardElevation(4.dp),
         shape = MaterialTheme.shapes.medium
     ) {
@@ -88,6 +90,6 @@ fun ArticleItemPreview() {
     )
 
     MaterialTheme {
-        ArticleItem(article = sampleArticle)
+        ArticleItem(article = sampleArticle, onClick = {})
     }
 }
