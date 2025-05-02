@@ -13,7 +13,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 
-
 class NewsViewModel(
     private val repository: NewsRepository,
     private val dispatcher: CoroutineDispatcher
@@ -28,14 +27,17 @@ class NewsViewModel(
     private val _isLoadingMore = MutableStateFlow(false)
     val isLoadingMore: StateFlow<Boolean> = _isLoadingMore.asStateFlow()
 
+    private val _isConnected = MutableStateFlow(false)
+    val isConnected: StateFlow<Boolean> = _isConnected
+
     private var nextPage: String? = null
 
-    //fetch news before the viewmodel is instantiated
+    // Fetch news when the ViewModel is initialized
     init {
         getNews()
     }
 
-    //Fetch News or Article
+    // Fetch News or Articles
     fun getNews() {
         viewModelScope.launch(dispatcher) {
             repository.getNews().collect { result ->
@@ -47,8 +49,9 @@ class NewsViewModel(
         }
     }
 
-    //Load more articles
+    // Load more articles
     fun loadMore() {
+        // Don't attempt to load if already loading or if no next page
         val page = nextPage ?: return
         if (_isLoadingMore.value) return
 
@@ -67,18 +70,30 @@ class NewsViewModel(
         }
     }
 
-    //Fetch Article by ID
+    // Fetch article by ID
     fun loadArticleById(articleId: String) {
         viewModelScope.launch(dispatcher) {
             repository.getArticle(articleId)
                 .catch { e ->
                     _articleDetailsState.value = NewsResult.Error("Unexpected Error: ${e.localizedMessage}")
                 }
-                .collect{ result ->
+                .collect { result ->
                     _articleDetailsState.value = result
                 }
         }
     }
 
+    // Set connectivity status and automatically trigger loading when reconnected
+    fun setConnectivityStatus(connected: Boolean) {
+        _isConnected.value = connected
+        if (connected) {
+            // Only try to load more articles when we are connected and haven't already loaded them
+            if (_newsState.value is NewsResult.Success && !isLoadingMore.value) {
+                loadMore()
+            }
+        }
+    }
+
 }
+
 

@@ -66,7 +66,8 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-
+    implementation(libs.lifecycle.runtime.ktx.v270)
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.7.0")
     // Room
     implementation(libs.bundles.room)
     annotationProcessor(libs.androidx.room.compiler)
