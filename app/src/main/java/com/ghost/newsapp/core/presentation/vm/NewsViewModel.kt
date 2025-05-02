@@ -2,6 +2,7 @@ package com.ghost.newsapp.core.presentation.vm
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ghost.newsapp.core.domain.Article
 import com.ghost.newsapp.core.domain.NewsList
 import com.ghost.newsapp.core.domain.NewsRepository
 import com.ghost.newsapp.core.domain.NewsResult
@@ -9,6 +10,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 
 
@@ -20,15 +22,20 @@ class NewsViewModel(
     private val _newsState = MutableStateFlow<NewsResult<NewsList>>(NewsResult.Loading)
     val newsState: StateFlow<NewsResult<NewsList>> = _newsState.asStateFlow()
 
+    private val _articleDetailsState = MutableStateFlow<NewsResult<Article>>(NewsResult.Loading)
+    val articleDetailsState: StateFlow<NewsResult<Article>> = _articleDetailsState.asStateFlow()
+
     private val _isLoadingMore = MutableStateFlow(false)
     val isLoadingMore: StateFlow<Boolean> = _isLoadingMore.asStateFlow()
 
     private var nextPage: String? = null
 
+    //fetch news before the viewmodel is instantiated
     init {
         getNews()
     }
 
+    //Fetch News or Article
     fun getNews() {
         viewModelScope.launch(dispatcher) {
             repository.getNews().collect { result ->
@@ -40,6 +47,7 @@ class NewsViewModel(
         }
     }
 
+    //Load more articles
     fun loadMore() {
         val page = nextPage ?: return
         if (_isLoadingMore.value) return
@@ -58,5 +66,19 @@ class NewsViewModel(
             _isLoadingMore.value = false
         }
     }
+
+    //Fetch Article by ID
+    fun loadArticleById(articleId: String) {
+        viewModelScope.launch(dispatcher) {
+            repository.getArticle(articleId)
+                .catch { e ->
+                    _articleDetailsState.value = NewsResult.Error("Unexpected Error: ${e.localizedMessage}")
+                }
+                .collect{ result ->
+                    _articleDetailsState.value = result
+                }
+        }
+    }
+
 }
 

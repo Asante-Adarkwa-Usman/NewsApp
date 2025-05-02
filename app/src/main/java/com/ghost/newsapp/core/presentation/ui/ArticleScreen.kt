@@ -21,13 +21,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.ghost.newsapp.core.domain.NewsResult
 import com.ghost.newsapp.core.presentation.vm.NewsViewModel
-import org.koin.androidx.compose.koinViewModel
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun NewsScreen(viewModel: NewsViewModel = koinViewModel()) {
+fun ArticleScreen(
+    viewModel: NewsViewModel,
+    navController: NavController
+) {
     val newsState by viewModel.newsState.collectAsState()
     val isLoadingMore by viewModel.isLoadingMore.collectAsState()
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
@@ -65,7 +69,9 @@ fun NewsScreen(viewModel: NewsViewModel = koinViewModel()) {
                     modifier = Modifier.padding(innerPadding)
                 ) {
                     itemsIndexed(articles) { index, article ->
-                        ArticleItem(article)
+                        ArticleItem(article) { articleId ->
+                            navController.navigate("article_detail/$articleId")
+                        }
                         if (index == articles.lastIndex && !isLoadingMore) {
                             LaunchedEffect(Unit) {
                                 viewModel.loadMore()
